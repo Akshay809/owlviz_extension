@@ -33,6 +33,8 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
 
     private OWLModelManagerListener owlModelManagerListener;
 
+    private static String relation_namespace = "http://relations/csis.pace.edu/semweb";    
+
     public AbstractOWLClassGraphModel(OWLModelManager owlModelManager,
                                       OWLObjectHierarchyProvider provider) {
         this.owlModelManager = owlModelManager;
