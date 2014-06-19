@@ -93,6 +93,32 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
         Set<OWLObject> children = new HashSet<OWLObject>();
             children.addAll(provider.getChildren(obj));
             children.addAll(provider.getEquivalents(obj));
+        OWLOntology current_ontology = owlModelManager.getActiveOntology();
+        OWLClass concept = (OWLClass)obj;
+        Set<OWLClass> classes = current_ontology.getClassesInSignature();
+        Set<OWLAnnotation> annotations = concept.getAnnotations(current_ontology);
+        Iterator<OWLAnnotation> itr = annotations.iterator();
+        while(itr.hasNext()) {
+            OWLAnnotation annotation = (OWLAnnotation) itr.next();
+            String delims = "[#]";
+            String relation_value = annotation.getValue().toString();
+                String[] value_tokens = relation_value.split(delims);
+            String relation_property = annotation.getProperty().toString();
+                String[] property_tokens = relation_property.split(delims);
+                String property = property_tokens[0];
+                property = property.substring(1,property.length());
+            if(value_tokens.length > 1 && property.compareTo(relation_namespace)==0) {
+                Iterator<OWLClass> itr2 = classes.iterator();
+                while(itr2.hasNext()) {
+                    OWLClass tempClass = (OWLClass) itr2.next();
+                    String class_iri = tempClass.getIRI().toString();
+                    if(relation_value.compareTo(class_iri)==0) {
+                        children.add((OWLObject)tempClass);
+                        break;
+                    }
+                }
+            }
+        }
         return children;
     }
 
