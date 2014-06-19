@@ -180,7 +180,14 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
     }
 
     public int getRelationshipDirection(Object parentObject, Object childObject) {
-        return GraphModel.DIRECTION_BACK;
+        Set<OWLObject> parents = provider.getParents((OWLObject)childObject);
+        Iterator<OWLObject> itr = parents.iterator();
+        while(itr.hasNext()) {
+            OWLObject parent = (OWLObject) itr.next();
+            if(parent.compareTo((OWLObject)parentObject)==0)
+                return GraphModel.DIRECTION_BACK;
+        }
+        return GraphModel.DIRECTION_FORWARD;
     }
 
     public Iterator getRelatedObjectsToAdd(Object obj) {
