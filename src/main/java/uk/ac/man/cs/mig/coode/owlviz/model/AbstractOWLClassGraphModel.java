@@ -99,8 +99,8 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
 
     protected Set<OWLObject> getParents(OWLObject obj) {
         Set<OWLObject> parents = new HashSet<OWLObject>();
-            parents.addAll(provider.getParents(obj));
-            parents.addAll(provider.getEquivalents(obj));
+//            parents.addAll(provider.getParents(obj));
+//            parents.addAll(provider.getEquivalents(obj));
         return parents;
     }
 
