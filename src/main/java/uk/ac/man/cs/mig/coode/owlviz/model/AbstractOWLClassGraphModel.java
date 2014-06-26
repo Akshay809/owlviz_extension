@@ -33,7 +33,7 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
 
     private OWLModelManagerListener owlModelManagerListener;
 
-    private static String relation_namespace = "http://relations/csis.pace.edu/semweb";    
+    private static String relation_namespace = "http://csis.pace.edu/semweb/relationship";    
 
     public AbstractOWLClassGraphModel(OWLModelManager owlModelManager,
                                       OWLObjectHierarchyProvider provider) {
