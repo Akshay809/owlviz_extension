@@ -23,6 +23,8 @@ import java.util.*;
  */
 public class AbstractOWLClassGraphModel extends AbstractGraphModel {
 
+    private static Map<String, Map<String, String>> mapper;
+
     private OWLModelManager owlModelManager;
 
     private OWLObjectHierarchyProvider provider;
@@ -38,6 +40,8 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
     public AbstractOWLClassGraphModel(OWLModelManager owlModelManager,
                                       OWLObjectHierarchyProvider provider) {
         this.owlModelManager = owlModelManager;
+        this.mapper = new HashMap<String, Map<String, String>>();
+
         listener = new OWLObjectHierarchyProviderListener() {
 
             public void nodeChanged(OWLObject node) {
@@ -105,15 +109,38 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
                 String[] value_tokens = relation_value.split(delims);
             String relation_property = annotation.getProperty().toString();
                 String[] property_tokens = relation_property.split(delims);
-                String property = property_tokens[0];
-                property = property.substring(1,property.length());
-            if(value_tokens.length > 1 && property.compareTo(relation_namespace)==0) {
+                String connected_on = property_tokens[1];
+                connected_on = connected_on.substring(0,connected_on.length()-1);
+                String property_prefix = property_tokens[0];
+                property_prefix = property_prefix.substring(1,property_prefix.length());
+                String relation_on = concept.getIRI().toString();
+                //Connecting...
+                //(KEY1)  relation_on
+                //(KEY2)  relation_value
+                //(VALUE) connected_on
+            if(value_tokens.length > 1 && property_prefix.compareTo(relation_namespace)==0) {
                 Iterator<OWLClass> itr2 = classes.iterator();
                 while(itr2.hasNext()) {
                     OWLClass tempClass = (OWLClass) itr2.next();
                     String class_iri = tempClass.getIRI().toString();
                     if(relation_value.compareTo(class_iri)==0) {
                         children.add((OWLObject)tempClass);
+                        if(mapper.isEmpty()) {
+                            Map<String, String> base_map = new HashMap<String, String>();
+                            base_map.put(relation_value, connected_on);
+                            mapper.put(relation_on,base_map);
+                        }
+                        else {
+                            if(mapper.containsKey(relation_on)) {
+                                Map<String, String> temp_map = mapper.get(relation_on);
+                                temp_map.put(relation_value, connected_on);
+                            }
+                            else {
+                                Map<String, String> temp_map = new HashMap<String, String>();
+                                temp_map.put(relation_value, connected_on);
+                                mapper.put(relation_on,temp_map);
+                            }
+                        }
                         break;
                     }
                 }
@@ -158,7 +185,7 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
     }
 
     public Object getRelationshipType(Object parentObject, Object childObject) {
-        OWLOntology current_ontology = owlModelManager.getActiveOntology();
+/*        OWLOntology current_ontology = owlModelManager.getActiveOntology();
         OWLClass parentConcept = (OWLClass)parentObject;
         OWLClass childConcept = (OWLClass)childObject;
             String childName = childConcept.getIRI().toString();
@@ -176,6 +203,15 @@ public class AbstractOWLClassGraphModel extends AbstractGraphModel {
                 property = property.substring(0,property.length()-1);
             return " " + property + " ";
         }
+        return " is-a ";
+*/
+        OWLClass parentConcept = (OWLClass)parentObject;
+        OWLClass childConcept = (OWLClass)childObject;
+        String relation_on = parentConcept.getIRI().toString();
+        String relation_to = childConcept.getIRI().toString();
+        if(mapper.containsKey(relation_on))
+            if(mapper.get(relation_on).containsKey(relation_to))
+                return " " + mapper.get(relation_on).get(relation_to) + " ";
         return " is-a ";
     }
 
