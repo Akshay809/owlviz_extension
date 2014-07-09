@@ -28,14 +28,16 @@ public class OWLClassGraphAssertedModel extends AbstractOWLClassGraphModel {
 
     private OWLModelManager owlModelManager;
 
-    private static Map<String, Map<String, String>> mapper;
+    private Map<String, Map<String, String>> mapper;
 
 	private static String relation_namespace = "http://csis.pace.edu/semweb/relationship";    
 
     public OWLClassGraphAssertedModel(OWLModelManager owlModelManager) {
         super(owlModelManager, owlModelManager.getOWLHierarchyManager().getOWLClassHierarchyProvider());
-        this.mapper = new HashMap<String, Map<String, String>>();
         this.provider = owlModelManager.getOWLHierarchyManager().getOWLClassHierarchyProvider();
+//        this.mapper = new HashMap<String, Map<String, String>>();
+//    	this.mapper = provider.mapper;
+    	this.mapper = provider.getMap();
         this.owlModelManager = owlModelManager;
     }
 
@@ -46,7 +48,9 @@ public class OWLClassGraphAssertedModel extends AbstractOWLClassGraphModel {
         Set<OWLObject> children = new HashSet<OWLObject>();
             children.addAll(provider.getChildren(obj));
             children.addAll(provider.getEquivalents(obj));
+            children.addAll(provider.getRelated(obj));
 
+/*
 //        Set<OWLClass> classes = current_ontology.getClassesInSignature();
         OWLClass concept = (OWLClass)obj;
         Set<OWLAnnotation> annotations = concept.getAnnotations(current_ontology);
@@ -100,6 +104,7 @@ public class OWLClassGraphAssertedModel extends AbstractOWLClassGraphModel {
                 }
             }
         }
+        */
         return children;
     }
 
